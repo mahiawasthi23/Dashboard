@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Bar, Line } from "react-chartjs-2";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ref, get } from "firebase/database";
 import Cookies from "js-cookie";
-import Chart from "chart.js/auto";
-import zoomPlugin from "chartjs-plugin-zoom";
 import { database, auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { useLocation, useNavigate } from "react-router-dom";
+import Chart from "chart.js/auto";
+import zoomPlugin from "chartjs-plugin-zoom";
+import { Filters } from "./Filters";
+import { AuthModal } from "./AuthModal";
+import { ChartSection } from "./ChartSection";
 import "./App.css";
 
 Chart.register(zoomPlugin);
@@ -24,7 +26,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [applyFilters, setApplyFilters] = useState(true); 
+  const [applyFilters, setApplyFilters] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,20 +35,18 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const age = params.get('age');
+    const gender = params.get('gender');
+    const start = params.get('start');
+    const end = params.get('end');
 
-    useEffect(() => {
-      const params = new URLSearchParams(location.search);
-      const age = params.get('age');
-      const gender = params.get('gender');
-      const start = params.get('start');
-      const end = params.get('end');
-  
-      if (age) setSelectedAge(age);
-      if (gender) setSelectedGender(gender);
-      if (start && end) setDateRange({ start, end });
-    }, [location.search]);
+    if (age) setSelectedAge(age);
+    if (gender) setSelectedGender(gender);
+    if (start && end) setDateRange({ start, end });
+  }, [location.search]);
 
-      
   const updateURL = () => {
     const params = new URLSearchParams();
     params.set('age', selectedAge);
@@ -62,18 +62,18 @@ function App() {
   const handleSignup = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      setShowForm(false); 
-      alert("Sigup successfully");
+      setShowForm(false);
+      alert("Signup successfully");
     } catch (error) {
       console.error("Error during sign up:", error.message);
-      alert("You have already account");
+      alert("You already have an account");
     }
   };
 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      setShowForm(false); 
+      setShowForm(false);
       alert("Login successfully");
     } catch (error) {
       console.error("Error during login:", error.message);
@@ -101,11 +101,10 @@ function App() {
     return new Date(year, month - 1, day);
   };
 
-
   const processData = useCallback((data) => {
     const startDate = dateRange.start ? convertToJSDate(dateRange.start) : null;
     const endDate = dateRange.end ? convertToJSDate(dateRange.end) : null;
-   
+
     const filteredData = data.filter((item) => {
       const itemDate = convertToJSDate(item.Day);
       return (
@@ -154,7 +153,6 @@ function App() {
     });
   }, [dateRange, selectedAge, selectedGender]);
 
-
   useEffect(() => {
     if (applyFilters) {
       const fetchData = async () => {
@@ -190,11 +188,10 @@ function App() {
     updateURL();
   };
 
-
   return (
     <div className="app-container">
       <header className="header">
-        <img src="/moon (2).png" alt="Moon Logo" className="logo"/>
+        <img src="/moon (2).png" alt="Moon Logo" className="logo" />
         {user ? (
           <div>
             <p>Welcome, {user.email}</p>
@@ -208,79 +205,35 @@ function App() {
       </header>
 
       {showForm && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-            />
-            {isSignUp ? (
-              <button onClick={handleSignup}>Sign Up</button>
-            ) : (
-              <button onClick={handleLogin}>Login</button>
-            )}
-            <button onClick={() => setIsSignUp(!isSignUp)}>
-              {isSignUp ? "Switch to Login" : "Switch to Sign Up"}
-            </button>
-            <button onClick={() => setShowForm(false)}>Close</button>
-          </div>
-        </div>
+        <AuthModal
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          handleSignup={handleSignup}
+          handleLogin={handleLogin}
+          isSignUp={isSignUp}
+          setIsSignUp={setIsSignUp}
+          setShowForm={setShowForm}
+        />
       )}
 
       {user && (
         <div className="dashboard-container">
           <div className="sidebar">
-            <h3>Filters</h3>
-            <label>
-              Age:
-              <select value={selectedAge} onChange={(e) => setSelectedAge(e.target.value)}>
-                <option>15-25</option>
-                <option>&gt;25</option>
-              </select>
-            </label>
-            <label>
-              Gender:
-              <select value={selectedGender} onChange={(e) => setSelectedGender(e.target.value)}>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-            </label>
-            <label>
-              Date Range:
-              <input
-                type="date"
-                name="start"
-                value={dateRange.start ? dateRange.start.split("/").reverse().join("-") : ""}
-                onChange={handleDateChange}
-              />
-              <input
-                type="date"
-                name="end"
-                value={dateRange.end ? dateRange.end.split("/").reverse().join("-") : ""}
-                onChange={handleDateChange}
-              />
-            </label>
-            <button onClick={() => setApplyFilters(true)}>Apply Filters</button>
+            <Filters
+              selectedAge={selectedAge}
+              setSelectedAge={setSelectedAge}
+              selectedGender={selectedGender}
+              setSelectedGender={setSelectedGender}
+              dateRange={dateRange}
+              setDateRange={setDateRange}
+              handleDateChange={handleDateChange}
+              setApplyFilters={setApplyFilters}
+            />
           </div>
           <div className="content">
-            <div className="charts">
-              <div className="chart">
-                <h3>Bar Chart</h3>
-                <Bar data={chartData} options={{ responsive: true, scales: { x: { stacked: true }, y: { stacked: true } } }} />
-              </div>
-              <div className="chart">
-                <h3>Line Chart</h3>
-                <Line data={lineChartData} />
-              </div>
-            </div>
+            <ChartSection chartData={chartData} lineChartData={lineChartData} />
           </div>
         </div>
       )}
