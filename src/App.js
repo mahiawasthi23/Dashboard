@@ -4,14 +4,12 @@ import { ref, get } from "firebase/database";
 import Cookies from "js-cookie";
 import { database, auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import Chart from "chart.js/auto";
-import zoomPlugin from "chartjs-plugin-zoom";
 import { Filters } from "./Filters";
 import { AuthModal } from "./AuthModal";
 import { ChartSection } from "./ChartSection";
 import "./App.css";
 
-Chart.register(zoomPlugin);
+
 
 function App() {
   const location = useLocation();

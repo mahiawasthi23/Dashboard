@@ -131,6 +131,22 @@ body {
   color: #333;
 }
 
+canvas {
+  cursor:zoom-in;
+  transition: cursor 0.2s ease-in-out;
+}
+
+canvas:active {
+  cursor: zoom-out;
+
+}
+
+.charts:hover {
+  cursor: default; 
+}
+
+
+
 .chart {
   flex: 1;
   background: white;
@@ -140,7 +156,6 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   height: 400px; /* Set a specific height here */
 }
-
 
 
 @media (max-width: 768px) {
