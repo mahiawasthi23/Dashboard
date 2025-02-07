@@ -56,7 +56,6 @@ function App() {
       params.set('end', dateRange.end);
     }
 
-    
     navigate(`?${params.toString()}`, { replace: true });
   };
 
