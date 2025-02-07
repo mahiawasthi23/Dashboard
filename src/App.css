@@ -131,6 +131,16 @@ body {
   color: #333;
 }
 
+.chart {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 400px; /* Set a specific height here */
+}
+
 
 
 @media (max-width: 768px) {
