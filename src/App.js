@@ -26,6 +26,7 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [applyFilters, setApplyFilters] = useState(true);
 
+    // Firebase ke onAuthStateChanged function ka use karke user authentication state ko track karna
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -33,6 +34,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // URL se query parameters ko read karke state ko update karna
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const age = params.get('age');
@@ -45,6 +47,7 @@ function App() {
     if (start && end) setDateRange({ start, end });
   }, [location.search]);
 
+ // URL ko create karna aur browser address bar mein display karna
   const updateURL = () => {
     const params = new URLSearchParams();
     params.set('age', selectedAge);
@@ -57,6 +60,7 @@ function App() {
     navigate(`?${params.toString()}`, { replace: true });
   };
 
+  // Sign-up process ko handle karta hai
   const handleSignup = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
@@ -68,6 +72,7 @@ function App() {
     }
   };
 
+  // User ko email aur password ke saath login karta hai
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -79,10 +84,12 @@ function App() {
     }
   };
 
+  //User logout ko handle karta hai
   const handleLogout = () => {
     signOut(auth);
   };
 
+  // Convert date string  to JavaScript Date object
   const convertToJSDate = (dateStr) => {
     if (!dateStr) return null;
     const parts = dateStr.split("/");
@@ -92,13 +99,10 @@ function App() {
     let day = parseInt(parts[1]);
     let year = parseInt(parts[2]);
 
-    if (month > 12) {
-      [day, month] = [month, day];
-    }
-
     return new Date(year, month - 1, day);
   };
 
+  // Filters the data based on selected age, gender, and date range, and then processes it to generate chart data and line chart data.
   const processData = useCallback((data) => {
     const startDate = dateRange.start ? convertToJSDate(dateRange.start) : null;
     const endDate = dateRange.end ? convertToJSDate(dateRange.end) : null;
@@ -151,6 +155,7 @@ function App() {
     });
   }, [dateRange, selectedAge, selectedGender]);
 
+  // Fetches data from Firebase, applies filters, and passes the filtered data to processData for rendering on the chart.
   useEffect(() => {
     if (applyFilters) {
       const fetchData = async () => {
@@ -174,6 +179,7 @@ function App() {
     }
   }, [applyFilters, dateRange, selectedAge, selectedGender, processData]);
 
+  // Handles date input change, formats the date, updates state, stores it in cookies, and updates the URL.
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
     if (!dateValue) return;
