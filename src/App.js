@@ -144,14 +144,18 @@ function App() {
       labels: dates,
       datasets: [
         {
-          label: "Trend",
-          data: filteredData.map((item) => item.B),
+          label: "Combined Trend (A to F)",
+          data: filteredData.map((item) =>
+            ["A", "B", "C", "D", "E", "F"].reduce((acc, key) => acc + item[key], 0)
+          ),
           borderColor: "rgba(153, 102, 255, 1)",
           fill: false,
           tension: 0.1,
         },
       ],
-    });
+    });    
+    
+    
   }, [dateRange, selectedAge, selectedGender]);
 
   // Fetches data from Firebase, applies filters, and passes the filtered data to processData for rendering on the chart.

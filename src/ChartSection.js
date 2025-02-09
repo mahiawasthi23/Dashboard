@@ -66,9 +66,10 @@ export function ChartSection({ chartData, lineChartData }) {
           data={chartData}
           options={{
             responsive: true,
-            maintainAspectRatio: true, // Allow chart to scale dynamically
+            maintainAspectRatio: true, 
             scales: { x: { stacked: true }, y: { stacked: true } },
             plugins: {
+              tooltip: { enabled: true, mode: "index", intersect: false },
               zoom: {
                 pan: { enabled: true, mode: "xy" },
                 zoom: {
@@ -88,8 +89,9 @@ export function ChartSection({ chartData, lineChartData }) {
           data={lineChartData}
           options={{
             responsive: true,
-            maintainAspectRatio: true, // Allow chart to scale dynamically
+            maintainAspectRatio: true, 
             plugins: {
+              tooltip: { enabled: true, mode: "index", intersect: false },
               zoom: {
                 pan: { enabled: true, mode: "xy" },
                 zoom: {
