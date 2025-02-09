@@ -1,43 +1,62 @@
 import React, { useRef, useEffect } from "react";
 import { Bar, Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, PointElement, LineElement } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  PointElement,
+  LineElement,
+} from "chart.js";
 import zoomPlugin from "chartjs-plugin-zoom";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  zoomPlugin
+);
 
 export function ChartSection({ chartData, lineChartData }) {
   const chartContainerRef = useRef(null);
 
   useEffect(() => {
     const canvases = document.querySelectorAll("canvas");
-  
+
     const updateZoomCursor = (event) => {
       canvases.forEach((canvas) => {
         if (event.deltaY < 0) {
-          canvas.style.cursor = "zoom-in"; 
+          canvas.style.cursor = "zoom-in";
         } else {
-          canvas.style.cursor = "zoom-out"; 
+          canvas.style.cursor = "zoom-out";
         }
       });
-  
+
       setTimeout(() => {
         canvases.forEach((canvas) => {
-          canvas.style.cursor = "grab"; 
+          canvas.style.cursor = "grab";
         });
       }, 1000);
     };
-  
+
     canvases.forEach((canvas) => {
       canvas.addEventListener("wheel", updateZoomCursor);
     });
-  
+
     return () => {
       canvases.forEach((canvas) => {
         canvas.removeEventListener("wheel", updateZoomCursor);
       });
     };
   }, []);
-  
 
   return (
     <div className="charts" ref={chartContainerRef}>
@@ -47,8 +66,8 @@ export function ChartSection({ chartData, lineChartData }) {
           data={chartData}
           options={{
             responsive: true,
+            maintainAspectRatio: true, // Allow chart to scale dynamically
             scales: { x: { stacked: true }, y: { stacked: true } },
-            maintainAspectRatio: false,
             plugins: {
               zoom: {
                 pan: { enabled: true, mode: "xy" },
@@ -64,12 +83,12 @@ export function ChartSection({ chartData, lineChartData }) {
       </div>
 
       <div className="chart">
-        <h3>Line Chart </h3>
+        <h3>Line Chart</h3>
         <Line
           data={lineChartData}
           options={{
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true, // Allow chart to scale dynamically
             plugins: {
               zoom: {
                 pan: { enabled: true, mode: "xy" },

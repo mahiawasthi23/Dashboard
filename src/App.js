@@ -94,10 +94,9 @@ function App() {
     if (!dateStr) return null;
     const parts = dateStr.split("/");
     if (parts.length !== 3) return null;
-
-    let month = parseInt(parts[0]);
-    let day = parseInt(parts[1]);
-    let year = parseInt(parts[2]);
+    let day = parseInt(parts[0]);  
+    let month = parseInt(parts[1]); 
+    let year = parseInt(parts[2]); 
 
     return new Date(year, month - 1, day);
   };

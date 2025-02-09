@@ -91,7 +91,7 @@ body {
 .dashboard-container {
   display: flex;
   height: 100vh;
-  width: 95vw;
+  /* width: 100vw; */
   padding-top: 6rem;
 }
 
@@ -145,16 +145,32 @@ canvas:active {
   cursor: default; 
 }
 
+.charts {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 30px;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+}
 
 
 .chart {
   flex: 1;
+  min-width: 300px;
+  max-width: 100%;
   background: white;
+  color: black;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  height: 400px; /* Set a specific height here */
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  height: 400px;
+  box-sizing: border-box;
+}
+.chart canvas {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 
@@ -162,7 +178,6 @@ canvas:active {
   .sidebar {
     width: 100%;
     margin-right: 0;
-    margin-bottom: 20px;
   }
 }
 
@@ -179,6 +194,7 @@ canvas:active {
 .chart {
   flex: 1;
   background: white;
+  color: black;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
