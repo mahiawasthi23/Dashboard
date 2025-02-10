@@ -23,6 +23,7 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [applyFilters, setApplyFilters] = useState(true);
+  const [homeText, sethomeText] = useState(true);
 
   // Firebase onAuthStateChanged to track authentication state
   useEffect(() => {
@@ -67,6 +68,7 @@ function App() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       setShowForm(false);
+      sethomeText(false);
       alert("Signup successful");
     } catch (error) {
       console.error("Error during sign up:", error.message);
@@ -88,6 +90,7 @@ function App() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setShowForm(false);
+      sethomeText(false);
       alert("Login successful");
     } catch (error) {
       console.error("Error during login:", error.message);
@@ -110,6 +113,7 @@ function App() {
   // Logout handler
   const handleLogout = () => {
     signOut(auth);
+    sethomeText(true)
   };
 
   // Convert date string to JavaScript Date object
@@ -243,7 +247,16 @@ function App() {
           </div>
         )}
       </header>
-
+      {homeText && (
+        <div className="home-text">
+          <h1>"Welcome to our Product Analytic Platform - Unlock real-time
+            insights, track performance with interactive charts, and
+            make data-driven decisions with ease. Stay ahead with
+            personalized filters and seamless sharing."
+          </h1>
+          <img src="/chart.png" alt="chart" className="logo" />
+        </div>
+      )}
       {showForm && (
         <AuthModal
           email={email}
