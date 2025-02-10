@@ -9,6 +9,7 @@ export function Filters({
   setDateRange,
   handleDateChange,
   setApplyFilters,
+  clearAllFilters,
 }) {
   return (
     <div>
@@ -42,6 +43,7 @@ export function Filters({
           onChange={handleDateChange}
         />
       </label>
+      <button onClick={clearAllFilters} className="clear-filters-btn">Clear</button>
       <button onClick={() => setApplyFilters(true)}>Apply Filters</button>
     </div>
   );

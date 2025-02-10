@@ -9,8 +9,6 @@ import { AuthModal } from "./AuthModal";
 import { ChartSection } from "./ChartSection";
 import "./App.css";
 
-
-
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,7 +24,7 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [applyFilters, setApplyFilters] = useState(true);
 
-    // Firebase ke onAuthStateChanged function ka use karke user authentication state ko track karna
+  // Firebase onAuthStateChanged to track authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -34,7 +32,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // URL se query parameters ko read karke state ko update karna
+  // Reading query params from URL and setting state accordingly
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const age = params.get('age');
@@ -47,7 +45,7 @@ function App() {
     if (start && end) setDateRange({ start, end });
   }, [location.search]);
 
- // URL ko create karna aur browser address bar mein display karna
+  // Update URL query params when filters change
   const updateURL = () => {
     const params = new URLSearchParams();
     params.set('age', selectedAge);
@@ -56,80 +54,77 @@ function App() {
       params.set('start', dateRange.start);
       params.set('end', dateRange.end);
     }
-
     navigate(`?${params.toString()}`, { replace: true });
   };
-// Sign-up process ko handle karta hai
-const handleSignup = async () => {
-  if (!validateEmail(email) || password === '') {
-    alert("Please enter a valid email and password.");
-    return;
-  }
 
-  try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    setShowForm(false);
-    alert("Signup successful");
-  } catch (error) {
-    console.error("Error during sign up:", error.message);
-    if (error.code === "auth/email-already-in-use") {
-      alert("Email is already in use. Please log in.");
-    } else {
-      alert("Something went wrong during signup. Please try again.");
+  // Sign-up handler
+  const handleSignup = async () => {
+    if (!validateEmail(email) || password === '') {
+      alert("Please enter a valid email and password.");
+      return;
     }
-  }
-};
 
-// User ko email aur password ke saath login karta hai
-const handleLogin = async () => {
-  if (!validateEmail(email) || password === '') {
-    alert("Please enter a valid email and password.");
-    return;
-  }
-
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    setShowForm(false);
-    alert("Login successful");
-  } catch (error) {
-    console.error("Error during login:", error.message);
-    if (error.code === "auth/user-not-found") {
-      alert("No account found with this email. Please sign up.");
-    } else if (error.code === "auth/wrong-password") {
-      alert("Incorrect password. Please try again.");
-    } else {
-      alert("Something went wrong during login. Please try again.");
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      setShowForm(false);
+      alert("Signup successful");
+    } catch (error) {
+      console.error("Error during sign up:", error.message);
+      if (error.code === "auth/email-already-in-use") {
+        alert("Email is already in use. Please log in.");
+      } else {
+        alert("Something went wrong during signup. Please try again.");
+      }
     }
-  }
-};
+  };
 
-// Email format check function
-const validateEmail = (email) => {
-  const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-  return re.test(email);
-};
+  // Login handler
+  const handleLogin = async () => {
+    if (!validateEmail(email) || password === '') {
+      alert("Please enter a valid email and password.");
+      return;
+    }
 
-  // Sign-up process ko handle karta hai
- 
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setShowForm(false);
+      alert("Login successful");
+    } catch (error) {
+      console.error("Error during login:", error.message);
+      if (error.code === "auth/user-not-found") {
+        alert("No account found with this email. Please sign up.");
+      } else if (error.code === "auth/wrong-password") {
+        alert("Incorrect password. Please try again.");
+      } else {
+        alert("Something went wrong during login. Please try again.");
+      }
+    }
+  };
 
-  //User logout ko handle karta hai
+  // Email validation
+  const validateEmail = (email) => {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return re.test(email);
+  };
+
+  // Logout handler
   const handleLogout = () => {
     signOut(auth);
   };
 
-  // Convert date string  to JavaScript Date object
+  // Convert date string to JavaScript Date object
   const convertToJSDate = (dateStr) => {
     if (!dateStr) return null;
     const parts = dateStr.split("/");
     if (parts.length !== 3) return null;
-    let day = parseInt(parts[0]);  
-    let month = parseInt(parts[1]); 
-    let year = parseInt(parts[2]); 
+    let day = parseInt(parts[0]);
+    let month = parseInt(parts[1]);
+    let year = parseInt(parts[2]);
 
     return new Date(year, month - 1, day);
   };
 
-  // Filters the data based on selected age, gender, and date range, and then processes it to generate chart data and line chart data.
+  // Process data for charts based on selected filters
   const processData = useCallback((data) => {
     const startDate = dateRange.start ? convertToJSDate(dateRange.start) : null;
     const endDate = dateRange.end ? convertToJSDate(dateRange.end) : null;
@@ -181,12 +176,11 @@ const validateEmail = (email) => {
           tension: 0.1,
         },
       ],
-    });    
-    
-    
+    });
+
   }, [dateRange, selectedAge, selectedGender]);
 
-  // Fetches data from Firebase, applies filters, and passes the filtered data to processData for rendering on the chart.
+  // Fetch and process data from Firebase
   useEffect(() => {
     if (applyFilters) {
       const fetchData = async () => {
@@ -210,7 +204,7 @@ const validateEmail = (email) => {
     }
   }, [applyFilters, dateRange, selectedAge, selectedGender, processData]);
 
-  // Handles date input change, formats the date, updates state, stores it in cookies, and updates the URL.
+  // Handle date changes
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
     if (!dateValue) return;
@@ -220,6 +214,17 @@ const validateEmail = (email) => {
 
     setDateRange((prev) => ({ ...prev, [e.target.name]: formattedDate }));
     Cookies.set(e.target.name, formattedDate);
+    updateURL();
+  };
+
+  // Clear all filters and reset charts
+  const clearAllFilters = () => {
+    setSelectedAge("15-25");
+    setSelectedGender("Male");
+    setDateRange({ start: "", end: "" });
+    setApplyFilters(true);
+    Cookies.remove("start");
+    Cookies.remove("end");
     updateURL();
   };
 
@@ -265,6 +270,7 @@ const validateEmail = (email) => {
               setDateRange={setDateRange}
               handleDateChange={handleDateChange}
               setApplyFilters={setApplyFilters}
+              clearAllFilters={clearAllFilters}
             />
           </div>
           <div className="content">
