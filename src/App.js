@@ -59,30 +59,58 @@ function App() {
 
     navigate(`?${params.toString()}`, { replace: true });
   };
+// Sign-up process ko handle karta hai
+const handleSignup = async () => {
+  if (!validateEmail(email) || password === '') {
+    alert("Please enter a valid email and password.");
+    return;
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    setShowForm(false);
+    alert("Signup successful");
+  } catch (error) {
+    console.error("Error during sign up:", error.message);
+    if (error.code === "auth/email-already-in-use") {
+      alert("Email is already in use. Please log in.");
+    } else {
+      alert("Something went wrong during signup. Please try again.");
+    }
+  }
+};
+
+// User ko email aur password ke saath login karta hai
+const handleLogin = async () => {
+  if (!validateEmail(email) || password === '') {
+    alert("Please enter a valid email and password.");
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    setShowForm(false);
+    alert("Login successful");
+  } catch (error) {
+    console.error("Error during login:", error.message);
+    if (error.code === "auth/user-not-found") {
+      alert("No account found with this email. Please sign up.");
+    } else if (error.code === "auth/wrong-password") {
+      alert("Incorrect password. Please try again.");
+    } else {
+      alert("Something went wrong during login. Please try again.");
+    }
+  }
+};
+
+// Email format check function
+const validateEmail = (email) => {
+  const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+  return re.test(email);
+};
 
   // Sign-up process ko handle karta hai
-  const handleSignup = async () => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setShowForm(false);
-      alert("Signup successfully");
-    } catch (error) {
-      console.error("Error during sign up:", error.message);
-      alert("You already have an account");
-    }
-  };
-
-  // User ko email aur password ke saath login karta hai
-  const handleLogin = async () => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setShowForm(false);
-      alert("Login successfully");
-    } catch (error) {
-      console.error("Error during login:", error.message);
-      alert("Signup before login");
-    }
-  };
+ 
 
   //User logout ko handle karta hai
   const handleLogout = () => {
