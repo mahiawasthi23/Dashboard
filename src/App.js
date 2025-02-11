@@ -23,7 +23,14 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [applyFilters, setApplyFilters] = useState(true);
-  const [homeText, sethomeText] = useState(true);
+  const [homeText, sethomeText] = useState(()=>{
+    return localStorage.getItem("homeText")==="true";
+  });
+
+
+  useEffect(() => {
+    localStorage.setItem("homeText", homeText);
+  }, [homeText]);
 
   // Firebase onAuthStateChanged to track authentication state
   useEffect(() => {
@@ -243,7 +250,7 @@ function App() {
           </div>
         ) : (
           <div>
-            <button onClick={() => setShowForm(true)}>Login / Sign Up</button>
+            <button onClick={() => {setShowForm(true); sethomeText(false);}}>Login / Sign Up</button>
           </div>
         )}
       </header>
