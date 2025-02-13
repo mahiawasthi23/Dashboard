@@ -255,14 +255,7 @@ function App() {
         )}
       </header>
       {homeText && (
-        <div className="home-text">
-          <h1>"Welcome to our Product Analytic Platform - Unlock real-time
-            insights, track performance with interactive charts, and
-            make data-driven decisions with ease. Stay ahead with
-            personalized filters and seamless sharing."
-          </h1>
-          <img src="/chart.png" alt="chart" className="logo" />
-        </div>
+        <img src="/background.png" alt="chart-img" className="background"/>
       )}
       {showForm && (
         <AuthModal
@@ -275,6 +268,7 @@ function App() {
           isSignUp={isSignUp}
           setIsSignUp={setIsSignUp}
           setShowForm={setShowForm}
+          sethomeText={sethomeText}
         />
       )}
 
